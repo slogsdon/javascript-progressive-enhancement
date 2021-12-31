@@ -1,0 +1,39 @@
+{
+  "name": "progressive-enhancement",
+  "description": "Small toolkit for enhancing user experience",
+  "keywords": [
+    "progressive",
+    "enhancement",
+    "sprinkles"
+  ],
+  "author": {
+    "email": "shane@shanelogsdon.com",
+    "name": "Shane Logsdon"
+  },
+  "version": "0.1.0",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./src/index.js",
+      "import": "./src/index.js",
+      "default": "./src/index.js"
+    }
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slogsdon/javascript-progressive-enhancement"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf src/*.d.ts src/directives/*.d.ts",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.4"
+  }
+}

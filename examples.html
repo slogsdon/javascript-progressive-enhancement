@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>progressive-enhancement examples</title>
+    <script type="module">
+        import ProgressiveEnhancement from "./src/index.js";
+        ProgressiveEnhancement.init();
+    </script>
+</head>
+<body>
+
+    <!-- data can exist in a global scope -->
+    <input pe-model="value">
+    <span pe-bind="value"></span>
+
+    <!-- data can be scoped within an element -->
+    <div pe-data="{this: 'should not be seen'}">
+        <div pe-data="{value: 'hello'}">
+            <!-- default values will be overwritten at runtime -->
+            <input pe-model="value" value="hi">
+            <span pe-bind="value">hi</span>
+        </div>
+    </div>
+
+</body>
+</html>

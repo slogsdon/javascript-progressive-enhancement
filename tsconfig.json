@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "lib": ["DOM", "ES2015"],
+        "strict": true,
+        "target": "ES2015"
+    }
+}
