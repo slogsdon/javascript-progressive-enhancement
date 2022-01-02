@@ -9,11 +9,15 @@
 </head>
 <body>
 
-    <!-- data can exist in a global scope -->
-    <input pe-model="value">
-    <span pe-bind:class="value"></span>
+    <h1>progressive-enhancement examples</h1>
 
-    <!-- data can be scoped within an element -->
+    <h2>two-way data binding with global data context</h2>
+    <div>
+        <input pe-model="value">
+        <span pe-bind="value"></span>
+    </div>
+
+    <h2>two-way data binding with scoped data context</h2>
     <div pe-data="{this: 'should not be seen'}">
         <div pe-data="{value: 'hello'}">
             <!-- default values will be overwritten at runtime -->
@@ -21,6 +25,21 @@
             <span pe-bind="value">hi</span>
         </div>
     </div>
+
+    <h2>two-way data binding to attribute</h2>
+    <div pe-data>
+        <input pe-model="value">
+        <input pe-bind:placeholder="value" disabled>
+    </div>
+
+    <h2>load remote html - replace existing content</h2>
+    <div pe-load-html data-url="lazy-loaded-content.php"><p>replace me</p></div>
+
+    <h2>load remote html - insert after existing content</h2>
+    <div pe-load-html:after data-url="lazy-loaded-content.php"><p>after me</p></div>
+
+    <h2>load remote html - insert before existing content</h2>
+    <div pe-load-html:before data-url="lazy-loaded-content.php"><p>before me</p></div>
 
 </body>
 </html>

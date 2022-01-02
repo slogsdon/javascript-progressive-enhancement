@@ -3,6 +3,7 @@
 import { defineDirective } from "./directive.js";
 import bindDirective from "./directives/bind.js";
 import dataDirective from "./directives/data.js";
+import loadHtmlDirective from "./directives/load-html.js";
 import modelDirective from "./directives/model.js";
 
 export default class ProgressiveEnhancement {
@@ -12,6 +13,7 @@ export default class ProgressiveEnhancement {
             { name: "data", setupFn: dataDirective },
             // order doesn't matter
             { name: "bind", setupFn: bindDirective },
+            { name: "load-html", setupFn: loadHtmlDirective },
             { name: "model", setupFn: modelDirective }
         ]
     }
