@@ -6,14 +6,18 @@ import Observable from "../observable.js";
  * Implements the `bind` directive, allowing elements to subscribe to changes
  * to an observable value
  *
- * @param {Record<string, Observable>} context
- * @param {Element} el
- * @param {string} key
+ * @param {{context: Record<string, Observable>, directive: string, el: Element, key: string}} data
  */
-export default function bindDirective(context, el, key) {
+export default function bindDirective({context, directive, el, key}) {
     if (!Object.hasOwnProperty.call(context, key) || !(context[key] instanceof Observable)) {
         context[key] = new Observable(context[key]);
     }
+
+    if (directive.indexOf(":") === -1) {
+        directive += ":text";
+    }
+
+    const [, targetAttribute] = directive.split(":", 2)
 
     /**
      * @param {any} value
@@ -24,13 +28,24 @@ export default function bindDirective(context, el, key) {
             value = "";
         }
 
-        if (el instanceof HTMLInputElement) {
-            el.value = value;
-            return;
-        }
+        switch (targetAttribute) {
+            case "class":
+                el.className = value;
+                break;
+            case "text":
+            case "value":
+                if (el instanceof HTMLInputElement) {
+                    el.value = value;
+                    return;
+                }
 
-        el.childNodes.forEach((child) => el.removeChild(child));
-        el.appendChild(document.createTextNode(value));
+                el.childNodes.forEach((child) => el.removeChild(child));
+                el.appendChild(document.createTextNode(value));
+                break;
+            default:
+                el.setAttribute(targetAttribute, value);
+                break;
+        }
     }
 
     // handle initial case

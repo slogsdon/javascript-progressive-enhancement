@@ -11,7 +11,7 @@
 
     <!-- data can exist in a global scope -->
     <input pe-model="value">
-    <span pe-bind="value"></span>
+    <span pe-bind:class="value"></span>
 
     <!-- data can be scoped within an element -->
     <div pe-data="{this: 'should not be seen'}">

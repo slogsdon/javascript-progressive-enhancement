@@ -26,11 +26,10 @@ function setData(context, el, key) {
  * Implements the `model` directive, allowing elements to update an observable
  * value as well as subscribe to changes to it
  *
- * @param {Record<string, Observable>} context
- * @param {Element} el
- * @param {string} key
+ * @param {{context: Record<string, Observable>, directive: string, el: Element, key: string}} data
  */
-export default function modelDirective(context, el, key) {
+export default function modelDirective(data) {
+    const {context, el, key} = data;
     setData(context, el, key);
-    bindDirective(context, el, key);
+    bindDirective(data);
 }
