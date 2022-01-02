@@ -24,6 +24,8 @@ export default function bindDirective({context, directive, el, key}) {
      * @returns
      */
     function handler(value) {
+        el.dispatchEvent(new CustomEvent("pe:model:before-update", { detail: { value } }));
+
         if (!value) {
             value = "";
         }
@@ -36,16 +38,18 @@ export default function bindDirective({context, directive, el, key}) {
             case "value":
                 if (el instanceof HTMLInputElement) {
                     el.value = value;
-                    return;
+                } else {
+                    el.childNodes.forEach((child) => el.removeChild(child));
+                    el.appendChild(document.createTextNode(value));
                 }
-
-                el.childNodes.forEach((child) => el.removeChild(child));
-                el.appendChild(document.createTextNode(value));
                 break;
             default:
                 el.setAttribute(targetAttribute, value);
                 break;
         }
+
+        el.dispatchEvent(new CustomEvent("pe:model:update", { detail: { value } }));
+        el.dispatchEvent(new CustomEvent("pe:model:after-update", { detail: { value } }));
     }
 
     // handle initial case

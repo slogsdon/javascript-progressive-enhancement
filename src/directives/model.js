@@ -17,7 +17,10 @@ function setData(context, el, key) {
 
     if (el instanceof HTMLInputElement) {
         el.addEventListener("input", () => {
+            el.dispatchEvent(new CustomEvent("pe:model:before-update", { detail: { value: el.value } }));
             context[key].value = el.value;
+            el.dispatchEvent(new CustomEvent("pe:model:update", { detail: { value: el.value } }));
+            el.dispatchEvent(new CustomEvent("pe:model:after-update", { detail: { value: el.value } }));
         });
     }
 }

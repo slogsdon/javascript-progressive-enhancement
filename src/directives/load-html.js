@@ -6,6 +6,8 @@
  * @param {HTMLTemplateElement} template
  */
 function handleUpdate(target, action, template) {
+    target.dispatchEvent(new CustomEvent("pe:load-html:before-dom-update"));
+
     switch (action) {
         case "replace":
             while (target.hasChildNodes()) {
@@ -17,19 +19,31 @@ function handleUpdate(target, action, template) {
             }
             // fallthrough is intended
         case "after":
-        case "before":
-            const isAfter = action === "after";
             while (template.content.hasChildNodes()) {
-                const child = isAfter ? template.content.firstChild : template.content.lastChild;
+                const child = template.content.firstChild;
 
                 if (!child) {
                     break;
                 }
 
-                isAfter ? target.appendChild(child) : target.insertBefore(child, target.firstChild);
+                target.appendChild(child);
+            }
+            break;
+        case "before":
+            while (template.content.hasChildNodes()) {
+                const child = template.content.lastChild;
+
+                if (!child) {
+                    break;
+                }
+
+                target.insertBefore(child, target.firstChild);
             }
             break;
     }
+
+    target.dispatchEvent(new CustomEvent("pe:load-html:load"));
+    target.dispatchEvent(new CustomEvent("pe:load-html:after-dom-update"));
 }
 
 /**
@@ -50,12 +64,17 @@ export default function loadHtmlDirective({context, directive, el, key}) {
 
     const [, action] = directive.split(":", 2);
 
+    el.dispatchEvent(new CustomEvent("pe:load-html:before-request"));
+
     fetch(url, {
         headers: {
             "Content-Type": "text/vnd.pe-load-html.html"
         }
     })
-        .then((resp) => resp.text())
+        .then((resp) => {
+            el.dispatchEvent(new CustomEvent("pe:load-html:after-request"));
+            return resp.text();
+        })
         .then((text) => {
             const templateHolder = document.createElement("div");
             templateHolder.innerHTML = text;
@@ -63,9 +82,13 @@ export default function loadHtmlDirective({context, directive, el, key}) {
             const template = templateHolder.querySelector("template");
 
             if (!template) {
+                el.dispatchEvent(new CustomEvent("pe:load-html:error", { detail: { reason: "" }}));
                 return;
             }
 
             handleUpdate(el, action, template);
+        })
+        .catch((reason) => {
+            el.dispatchEvent(new CustomEvent("pe:load-html:rerror", { detail: { reason }}));
         });
 }
