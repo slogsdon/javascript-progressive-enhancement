@@ -17,7 +17,7 @@ export default function bindDirective({context, directive, el, key}) {
         directive += ":text";
     }
 
-    const [, targetAttribute] = directive.split(":", 2)
+    const [, targetAttribute] = directive.split(":", 2);
 
     /**
      * @param {any} value
