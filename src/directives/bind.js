@@ -6,9 +6,9 @@ import Observable from "../observable.js";
  * Implements the `bind` directive, allowing elements to subscribe to changes
  * to an observable value
  *
- * @param {{context: Record<string, Observable>, directive: string, el: Element, key: string}} data
+ * @param {{context: Record<string, Observable>, directive: string, target: Element, key: string}} data
  */
-export default function bindDirective({context, directive, el, key}) {
+export default function bindDirective({context, directive, target, key}) {
     if (!Object.hasOwnProperty.call(context, key) || !(context[key] instanceof Observable)) {
         context[key] = new Observable(context[key]);
     }
@@ -24,7 +24,7 @@ export default function bindDirective({context, directive, el, key}) {
      * @returns
      */
     function handler(value) {
-        el.dispatchEvent(new CustomEvent("pe:model:before-update", { detail: { value } }));
+        target.dispatchEvent(new CustomEvent("pe:model:before-update", { detail: { value } }));
 
         if (!value) {
             value = "";
@@ -32,24 +32,24 @@ export default function bindDirective({context, directive, el, key}) {
 
         switch (targetAttribute) {
             case "class":
-                el.className = value;
+                target.className = value;
                 break;
             case "text":
             case "value":
-                if (el instanceof HTMLInputElement) {
-                    el.value = value;
+                if (target instanceof HTMLInputElement) {
+                    target.value = value;
                 } else {
-                    el.childNodes.forEach((child) => el.removeChild(child));
-                    el.appendChild(document.createTextNode(value));
+                    target.childNodes.forEach((child) => target.removeChild(child));
+                    target.appendChild(document.createTextNode(value));
                 }
                 break;
             default:
-                el.setAttribute(targetAttribute, value);
+                target.setAttribute(targetAttribute, value);
                 break;
         }
 
-        el.dispatchEvent(new CustomEvent("pe:model:update", { detail: { value } }));
-        el.dispatchEvent(new CustomEvent("pe:model:after-update", { detail: { value } }));
+        target.dispatchEvent(new CustomEvent("pe:model:update", { detail: { value } }));
+        target.dispatchEvent(new CustomEvent("pe:model:after-update", { detail: { value } }));
     }
 
     // handle initial case

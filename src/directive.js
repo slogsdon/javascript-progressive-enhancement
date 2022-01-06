@@ -35,7 +35,7 @@ function hasAttributeStartingWith(prefix) {
 
 /**
  * @param {string} name
- * @param {(data: {context: Record<string, Observable>, directive: string, el: Element, key: string}) => void} fn
+ * @param {(data: {context: Record<string, Observable>, directive: string, target: Element, key: string}) => void} fn
  * @param {boolean} [refresh]
  */
 export function defineDirective(name, fn, refresh) {
@@ -45,13 +45,13 @@ export function defineDirective(name, fn, refresh) {
 
     const directiveName = `pe-${name}`;
 
-    elements.filter(hasAttributeStartingWith(directiveName)).forEach((el) => {
-        const attributeName = (findAttributesPrefixedWith(el, directiveName) || [directiveName])[0];
-        const key = el.getAttribute(attributeName) || "";
+    elements.filter(hasAttributeStartingWith(directiveName)).forEach((target) => {
+        const attributeName = (findAttributesPrefixedWith(target, directiveName) || [directiveName])[0];
+        const key = target.getAttribute(attributeName) || "";
         fn({
-            context: findDataContext(el.parentElement),
+            context: findDataContext(target.parentElement),
             directive: attributeName,
-            el,
+            target,
             key,
         });
     });

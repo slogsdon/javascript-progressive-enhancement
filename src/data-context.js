@@ -13,16 +13,16 @@ export const defaultDataContext = {};
  * Traverses parent elements until a data context is found. If not found,
  * the global fallback data context is returned.
  *
- * @param {Element?} el
+ * @param {Element?} target
  * @returns {Record<string, Observable>}
  */
-export function findDataContext(el) {
+export function findDataContext(target) {
     let result = defaultDataContext;
 
-    if (el && /** @type {any} */ (el)[PROGRESSIVEENHANCEMENT_DATA_CONTEXT_NAME]) {
-        result = /** @type {any} */ (el)[PROGRESSIVEENHANCEMENT_DATA_CONTEXT_NAME];
-    } else if (el && el.parentElement) {
-        result = findDataContext(el.parentElement);
+    if (target && /** @type {any} */ (target)[PROGRESSIVEENHANCEMENT_DATA_CONTEXT_NAME]) {
+        result = /** @type {any} */ (target)[PROGRESSIVEENHANCEMENT_DATA_CONTEXT_NAME];
+    } else if (target && target.parentElement) {
+        result = findDataContext(target.parentElement);
     }
 
     return result;

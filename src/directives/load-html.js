@@ -5,8 +5,14 @@
  * @param {string} action
  * @param {HTMLTemplateElement} template
  */
-function handleUpdate(target, action, template) {
+function applyUpdate(target, action, template) {
     target.dispatchEvent(new CustomEvent("pe:load-html:before-dom-update"));
+
+    /**
+     * @param {HTMLTemplateElement} temp
+     * @returns
+     */
+    function getContent(temp) { return temp.content || temp; }
 
     switch (action) {
         case "replace":
@@ -17,10 +23,10 @@ function handleUpdate(target, action, template) {
 
                 target.removeChild(target.firstChild);
             }
-            // fallthrough is intended
+            // fallthrough to "after" is intended
         case "after":
-            while (template.content.hasChildNodes()) {
-                const child = template.content.firstChild;
+            while (getContent(template).hasChildNodes()) {
+                const child = getContent(template).firstChild;
 
                 if (!child) {
                     break;
@@ -30,8 +36,8 @@ function handleUpdate(target, action, template) {
             }
             break;
         case "before":
-            while (template.content.hasChildNodes()) {
-                const child = template.content.lastChild;
+            while (getContent(template).hasChildNodes()) {
+                const child = getContent(template).lastChild;
 
                 if (!child) {
                     break;
@@ -49,10 +55,10 @@ function handleUpdate(target, action, template) {
 /**
  * Implements the `load-html` directive, allowing HTML to be loaded asynchronously
  *
- * @param {{context: Record<string, any>, directive: string, el: Element, key: string}} data
+ * @param {{context: Record<string, any>, directive: string, target: Element, key: string}} data
  */
-export default function loadHtmlDirective({context, directive, el, key}) {
-    const url = el.getAttribute("data-url");
+export default function loadHtmlDirective({context, directive, target, key}) {
+    const url = target.getAttribute("data-url");
 
     if (!url) {
         return;
@@ -64,7 +70,7 @@ export default function loadHtmlDirective({context, directive, el, key}) {
 
     const [, action] = directive.split(":", 2);
 
-    el.dispatchEvent(new CustomEvent("pe:load-html:before-request"));
+    target.dispatchEvent(new CustomEvent("pe:load-html:before-request"));
 
     fetch(url, {
         headers: {
@@ -72,7 +78,7 @@ export default function loadHtmlDirective({context, directive, el, key}) {
         }
     })
         .then((resp) => {
-            el.dispatchEvent(new CustomEvent("pe:load-html:after-request"));
+            target.dispatchEvent(new CustomEvent("pe:load-html:after-request"));
             return resp.text();
         })
         .then((text) => {
@@ -82,13 +88,13 @@ export default function loadHtmlDirective({context, directive, el, key}) {
             const template = templateHolder.querySelector("template");
 
             if (!template) {
-                el.dispatchEvent(new CustomEvent("pe:load-html:error", { detail: { reason: "" }}));
+                target.dispatchEvent(new CustomEvent("pe:load-html:error", { detail: { reason: "" }}));
                 return;
             }
 
-            handleUpdate(el, action, template);
+            applyUpdate(target, action, template);
         })
         .catch((reason) => {
-            el.dispatchEvent(new CustomEvent("pe:load-html:rerror", { detail: { reason }}));
+            target.dispatchEvent(new CustomEvent("pe:load-html:rerror", { detail: { reason }}));
         });
 }
